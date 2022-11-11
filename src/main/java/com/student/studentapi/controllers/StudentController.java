@@ -1,6 +1,9 @@
 package com.student.studentapi.controllers;
 
+import com.student.studentapi.dto.StudentDto;
 import com.student.studentapi.models.Student;
+import com.student.studentapi.services.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,40 +14,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/")
 public class StudentController {
-//  returns all the students
-  @GetMapping("students")
-    public ResponseEntity<List<Student>> getstudents(){
-      List<Student> students = new ArrayList<>();
-      students.add(new Student(1, "diana","nyamai"));
-      students.add(new Student(2, "fiona", "nyamai"));
-      students.add(new Student(3, "queen", "mary"));
-      return ResponseEntity.ok(students);
+  private StudentService studentService;
+@Autowired
+  public StudentController(StudentService studentService) {
+    this.studentService = studentService;
+  }
+
+  //  returns all the students
+  @GetMapping("/students")
+    public ResponseEntity<List<StudentDto>> getstudents(){
+      return ResponseEntity.ok(studentService.getAllStudents());
   }
 //  returns a single student
   @GetMapping("/students/{id}")
-  public Student getonestudent(@PathVariable int id){
-    return new Student(id, "ndinda", "deedee");
+  public ResponseEntity<StudentDto> getonestudent(@PathVariable int id){
+    return ResponseEntity.ok(studentService.getOneStudent(id));
   }
 //  creates a new student
   @PostMapping("/students/create")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<Student> createStudent(@RequestBody Student student){
-    System.out.println(student.getFirstname());
-    System.out.println(student.getLastname());
-    return new ResponseEntity<>(student, HttpStatus.CREATED);
+  public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
+    return new ResponseEntity<>(studentService.createStudents(studentDto), HttpStatus.CREATED);
   }
 //  updates a student
   @PutMapping("/students/{id}/update")
-  public ResponseEntity<Student> updateStudent(@RequestBody Student student, @PathVariable int id){
-    System.out.println(student.getLastname());
-    System.out.println(student.getFirstname());
-    System.out.println(student.getStudentId());
-    return ResponseEntity.ok(student);
+  public ResponseEntity<StudentDto> updateStudent(@RequestBody StudentDto studentDto, @PathVariable int id){
+    System.out.println(studentDto.getLastname());
+    System.out.println(studentDto.getFirstname());
+    System.out.println(studentDto.getStudentId());
+    return ResponseEntity.ok(studentService.updateStudent(studentDto, id));
   }
 //  deleting student record
   @DeleteMapping("/students/{id}/delete")
   public ResponseEntity<String> deleteStudent(@PathVariable int id){
     System.out.println(id);
-    return ResponseEntity.ok("student deleted successully");
+    studentService.deleteStudent(id);
+    return ResponseEntity.ok("student has been deleted");
   }
 }
