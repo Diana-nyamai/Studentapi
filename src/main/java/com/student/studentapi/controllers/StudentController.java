@@ -19,7 +19,12 @@ public class StudentController {
   public StudentController(StudentService studentService) {
     this.studentService = studentService;
   }
-
+  //  creates a new student
+  @PostMapping("/students/create")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
+    return new ResponseEntity<>(studentService.createStudents(studentDto), HttpStatus.CREATED);
+  }
   //  returns all the students
   @GetMapping("/students")
     public ResponseEntity<List<StudentDto>> getstudents(){
@@ -30,12 +35,7 @@ public class StudentController {
   public ResponseEntity<StudentDto> getonestudent(@PathVariable int id){
     return ResponseEntity.ok(studentService.getOneStudent(id));
   }
-//  creates a new student
-  @PostMapping("/students/create")
-  @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
-    return new ResponseEntity<>(studentService.createStudents(studentDto), HttpStatus.CREATED);
-  }
+
 //  updates a student
   @PutMapping("/students/{id}/update")
   public ResponseEntity<StudentDto> updateStudent(@RequestBody StudentDto studentDto, @PathVariable int id){
